@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="93461556-b769-443d-ae00-3ae6f8c210aa" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="HTML_rendering_trail" doc:id="63779159-658c-48dc-9812-8298754b0337" >
+		<http:listener doc:name="HTML_listener" doc:id="7209b5cd-12ee-49ea-bfeb-a0e93da2b9d2" config-ref="HTTP_Listener_config" path="/html" />
+		<set-variable value='#[(mule.home default "") ++ "\\apps\\" ++ (app.name default "")]' doc:name="create_the_folder_location" doc:id="3796536d-1e7d-43d8-8697-45660ea57dc2" variableName="workingDir" />
+		<logger level="INFO" doc:name="Validate_workingdirectory_logger" doc:id="98a7c56b-5879-46dd-88d9-8031d0818f3a" message="#[vars.workingDir]" />
+		<http:load-static-resource doc:name="load_static_resource" doc:id="28d74f81-6083-4cc0-aa6e-4b495d3eb9a5" resourceBasePath="#[vars.workingDir]" defaultFile="hello.html" />
+	</flow>
+</mule>
