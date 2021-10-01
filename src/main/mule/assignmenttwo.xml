@@ -7,10 +7,27 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="93461556-b769-443d-ae00-3ae6f8c210aa" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="f9ce0bae-c6c7-42d8-a944-05b97976d76d" >
+		<http:request-connection host="api.openweathermap.org" port="80" />
+	</http:request-config>
+	<flow name="ResponseFlow" doc:id="b570bc28-4673-4339-8660-9239adb83593" >
+		<http:listener doc:name="Listener" doc:id="b71c9c51-5321-4a96-b42b-098c35a3f65f" config-ref="HTTP_Listener_config" path="/response"/>
+		<set-variable value="#[attributes.queryParams.lat]" doc:name="Lat" doc:id="0ec3517e-d19a-41fc-b86c-b91a4afd3da8" variableName="lat"/>
+		<set-variable value="#[attributes.queryParams.lon]" doc:name="Lon" doc:id="56dfae57-7e44-46b6-9c95-57d265bd75fc" variableName="lon"/>
+		<http:request method="GET" doc:name="Request" doc:id="33ccf6a6-2ebf-466e-8069-68e7e14a1d7e" config-ref="HTTP_Request_configuration" path="/data/2.5/weather">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"appid" : "24a93fbe28f740439b0e020b60bbed7a",
+	"lat" : vars.lat,
+	"lon" : vars.lon
+}]]]></http:query-params>
+		</http:request>
+	</flow>
 	<flow name="HTML_rendering_trail" doc:id="63779159-658c-48dc-9812-8298754b0337" >
 		<http:listener doc:name="HTML_listener" doc:id="7209b5cd-12ee-49ea-bfeb-a0e93da2b9d2" config-ref="HTTP_Listener_config" path="/html" />
 		<set-variable value='#[(mule.home default "") ++ "\\apps\\" ++ (app.name default "")]' doc:name="create_the_folder_location" doc:id="3796536d-1e7d-43d8-8697-45660ea57dc2" variableName="workingDir" />
 		<logger level="INFO" doc:name="Validate_workingdirectory_logger" doc:id="98a7c56b-5879-46dd-88d9-8031d0818f3a" message="#[vars.workingDir]" />
-		<http:load-static-resource doc:name="load_static_resource" doc:id="28d74f81-6083-4cc0-aa6e-4b495d3eb9a5" resourceBasePath="#[vars.workingDir]" defaultFile="hello.html" />
+		<parse-template doc:name="Parse Template" doc:id="eb40cc3f-a08d-43f1-a1e4-41bb086325d3" location="form.html"/>
 	</flow>
 </mule>
