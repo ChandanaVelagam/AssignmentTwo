@@ -1,4 +1,5 @@
 <html>
+
 	<body>
 		<h1>Enter lat and long</h1>
 		<form action = "http://localhost:8081/response">
@@ -8,6 +9,51 @@
 			
 			<input type = "submit" value = "submit">
 </form>
+
+
+
+<p>Click the button to get your coordinates.</p>
+
+
+
+<button onclick="getLocation()">Use Current Location</button>
+	
+
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+	
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+  
+}
+function showPosition(position) {
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function () {
+
+	x.innerHTML = xhr.responseText;
+	
+}
+	var geoData = '?lat=' + position.coords.latitude + '&lon=' + position.coords.longitude;
+	xhr.open('GET', 'http://localhost:8081/response' + geoData);
+	xhr.send();
+  
+  
+}
+
+
+
+</script>
+
+
+
 
 </body>
 </html>
